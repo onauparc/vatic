@@ -940,6 +940,21 @@ function Track(player, color, position)
     this.estimate = function(frame)
     {
         var bounds = this.journal.bounds(frame);
+        
+        console.log("Frame "+frame);
+        
+        if (this.journal.annotations[frame]){
+          console.log("annonation exists!!! ");
+          console.log("bounds['left'] "+bounds['left'].xtl+" "+bounds['left'].ytl);
+          return bounds['left'];
+        }
+        else{
+          console.log("generated");
+        }
+        if (bounds['left'].occluded || bounds['left'].outside){
+          return bounds['left'];
+        }
+                        
         if (bounds['leftframe'] == bounds['rightframe'])
         {
             return bounds['left'];
@@ -1005,27 +1020,27 @@ function Journal(start, blowradius)
     {
         console.log("Marking " + frame);
 
-        var newannotations = {};
 
         for (var i in this.annotations)
         {
             if (Math.abs(i - frame) >= this.blowradius)
             {
-                newannotations[i] = this.annotations[i];
+                this.annotations[i] = this.annotations[i];
             }
             else if (i == this.start)
             {
                 console.log("Start would blow, so propagating");
-                newannotations[i] = position;
             }
             else
             {
                 console.log("Blowing out annotation at " + i);
             }
         }
-
-        this.annotations = newannotations;
+        
+        
         this.annotations[frame] = position;
+//        console.log("frame "+frame+" generated false");
+//        console.log("position "+position.xtl+" "+position.ytl);
     }
 
     
